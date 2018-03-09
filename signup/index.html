@@ -9,6 +9,7 @@
         function signinCallback(authResult) {
             if (authResult['status']['signed_in']) {
 
+                console.log(authResult)
                 AWS.config.region = 'ap-northeast-1'; // リージョン
                 // Add the Google access token to the Cognito credentials login map.
                 AWS.config.credentials = new AWS.CognitoIdentityCredentials({
