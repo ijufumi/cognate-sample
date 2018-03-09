@@ -1,1 +1,1 @@
-# cognate-sample
+# cognite-sample
