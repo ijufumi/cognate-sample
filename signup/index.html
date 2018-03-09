@@ -6,32 +6,41 @@
     <script src="https://sdk.amazonaws.com/js/aws-sdk-2.206.0.min.js"></script>
     <script src="../js/amazon-cognito.min.js"></script>
     <script type="text/javascript">
-        AWS.config.region = 'ap-northeast-1'; // リージョン
-        AWS.config.credentials = new AWS.CognitoIdentityCredentials({
-            IdentityPoolId: 'ap-northeast-1:69c9fb0e-5f5a-4fef-91f9-be113da5d196',
-        });
+        function signinCallback(authResult) {
+            if (authResult['status']['signed_in']) {
 
-        AWS.config.credentials.get(function(){
-
-            var syncClient = new AWS.CognitoSyncManager();
-
-            syncClient.openOrCreateDataset('myDataset', function(err, dataset) {
-
-                dataset.put('myKey', 'myValue', function(err, record){
-
-                    dataset.synchronize({
-
-                        onSuccess: function(data, newRecords) {
-                            console.log(data);
-                            console.log(newRecords);
-                        }
-
-                    });
-
+                AWS.config.region = 'ap-northeast-1'; // リージョン
+                // Add the Google access token to the Cognito credentials login map.
+                AWS.config.credentials = new AWS.CognitoIdentityCredentials({
+                    IdentityPoolId: 'ap-northeast-1:69c9fb0e-5f5a-4fef-91f9-be113da5d196',
+                    Logins: {
+                        'accounts.google.com': authResult['id_token']
+                    }
                 });
 
-            });
-        });
+                // Obtain AWS credentials
+                AWS.config.credentials.get(function(){
+                    var syncClient = new AWS.CognitoSyncManager();
+
+                    syncClient.openOrCreateDataset('myDataset', function(err, dataset) {
+
+                        dataset.put('myKey', 'myValue', function(err, record){
+
+                            dataset.synchronize({
+
+                                onSuccess: function(data, newRecords) {
+                                    console.log(data);
+                                    console.log(newRecords);
+                                }
+
+                            });
+
+                        });
+
+                    });
+                });
+            }
+        }
     </script>
 </head>
 <body>
