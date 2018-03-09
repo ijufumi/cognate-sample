@@ -9,42 +9,42 @@
     <meta name="google-signin-client_id" content="847419419731-l8rs3sac5i8i58p033748h9v0o51jm2u.apps.googleusercontent.com">
     <script src="https://apis.google.com/js/platform.js" async defer></script>
     <script type="text/javascript">
-        function signinCallback(authResult) {
-            if (authResult['status']['signed_in']) {
-
-                console.log(authResult)
-                AWS.config.region = 'ap-northeast-1'; // リージョン
-                // Add the Google access token to the Cognito credentials login map.
-                AWS.config.credentials = new AWS.CognitoIdentityCredentials({
-                    IdentityPoolId: 'ap-northeast-1:69c9fb0e-5f5a-4fef-91f9-be113da5d196',
-                    Logins: {
-                        'accounts.google.com': authResult['id_token']
-                    }
-                });
-
-                // Obtain AWS credentials
-                AWS.config.credentials.get(function(){
-                    var syncClient = new AWS.CognitoSyncManager();
-
-                    syncClient.openOrCreateDataset('myDataset', function(err, dataset) {
-
-                        dataset.put('myKey', 'myValue', function(err, record){
-
-                            dataset.synchronize({
-
-                                onSuccess: function(data, newRecords) {
-                                    console.log(data);
-                                    console.log(newRecords);
-                                }
-
-                            });
-
-                        });
-
-                    });
-                });
-            }
-        }
+        // function signinCallback(authResult) {
+        //     if (authResult['status']['signed_in']) {
+        //
+        //         console.log(authResult)
+        //         AWS.config.region = 'ap-northeast-1'; // リージョン
+        //         // Add the Google access token to the Cognito credentials login map.
+        //         AWS.config.credentials = new AWS.CognitoIdentityCredentials({
+        //             IdentityPoolId: 'ap-northeast-1:69c9fb0e-5f5a-4fef-91f9-be113da5d196',
+        //             Logins: {
+        //                 'accounts.google.com': authResult['id_token']
+        //             }
+        //         });
+        //
+        //         // Obtain AWS credentials
+        //         AWS.config.credentials.get(function(){
+        //             var syncClient = new AWS.CognitoSyncManager();
+        //
+        //             syncClient.openOrCreateDataset('myDataset', function(err, dataset) {
+        //
+        //                 dataset.put('myKey', 'myValue', function(err, record){
+        //
+        //                     dataset.synchronize({
+        //
+        //                         onSuccess: function(data, newRecords) {
+        //                             console.log(data);
+        //                             console.log(newRecords);
+        //                         }
+        //
+        //                     });
+        //
+        //                 });
+        //
+        //             });
+        //         });
+        //     }
+        // }
     </script>
 </head>
 <body>
@@ -63,6 +63,19 @@
         // The ID token you need to pass to your backend:
         var id_token = googleUser.getAuthResponse().id_token;
         console.log("ID Token: " + id_token);
+
+        AWS.config.region = 'ap-northeast-1'; // リージョン
+        // Add the Google access token to the Cognito credentials login map.
+        AWS.config.credentials = new AWS.CognitoIdentityCredentials({
+            IdentityPoolId: 'ap-northeast-1:69c9fb0e-5f5a-4fef-91f9-be113da5d196',
+            Logins: {
+                'accounts.google.com': id_token
+            },
+            LoginId: profile.getEmail()
+        });
+        AWS.config.credentials.get(function(){
+
+        });
     };
 </script>
 </body>
